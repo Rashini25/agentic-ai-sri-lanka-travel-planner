@@ -6,6 +6,7 @@ from agents.accommodation_agent import AccommodationAgent
 from agents.itinerary_agent import ItineraryAgent
 from agents.weather_agent import WeatherAgent
 from agents.recommendation_agent import RecommendationAgent
+from agents.router_agent import RouterAgent
 
 
 
@@ -25,9 +26,18 @@ weather_agent = WeatherAgent()
 
 recommendation_agent = RecommendationAgent()
 
+router_agent = RouterAgent()
 
 
-def planner_agent(destination, budget, preferences):
+
+def planner_agent(destination, budget, preferences, user_message):
+
+
+    # Route user request using Router Agent
+    routing_information = router_agent.process_request(
+        user_message
+    )
+
 
 
     # Get travel information from RAG Agent
@@ -94,9 +104,11 @@ def planner_agent(destination, budget, preferences):
 
 
 
-    # Prepare data for Recommendation Agent
+    # Prepare information for Recommendation Agent
 
     recommendation_input = {
+
+        "sender": "Planner Agent",
 
         "destination": destination,
 
@@ -108,7 +120,9 @@ def planner_agent(destination, budget, preferences):
 
         "transport_information": transport_info,
 
-        "accommodation_information": accommodation_info
+        "accommodation_information": accommodation_info,
+
+        "itinerary_information": itinerary_info
 
     }
 
@@ -128,6 +142,9 @@ def planner_agent(destination, budget, preferences):
         "sender": "Planner Agent",
 
         "destination": destination,
+
+
+        "routing_information": routing_information,
 
 
         "preference_information": preference_info,
@@ -158,6 +175,7 @@ def planner_agent(destination, budget, preferences):
 
 
 
+
 if __name__ == "__main__":
 
 
@@ -166,6 +184,7 @@ if __name__ == "__main__":
         "Kitulgala",
 
         5000,
+
 
         {
 
@@ -181,7 +200,14 @@ if __name__ == "__main__":
 
             ]
 
-        }
+        },
+
+
+        """
+        I want to travel to Kitulgala this weekend.
+        I need a low budget adventure trip.
+        Suggest transportation, accommodation and activities.
+        """
 
     )
 
