@@ -19,7 +19,9 @@ collection = client.get_collection(
 )
 
 
-def search_travel(query, results=3):
+def search_travel(destination, results=1):
+
+    query = f"Travel information about {destination}"
 
     # Convert query into embedding
     query_embedding = model.encode(
