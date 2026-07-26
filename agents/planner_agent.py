@@ -1,14 +1,18 @@
 from agents.preference_agent import PreferenceAgent
+from agents.budget_agent import BudgetAgent
 from agents.rag_agent import rag_agent
 from agents.transport_agent import TransportAgent
 from agents.accommodation_agent import AccommodationAgent
 from agents.itinerary_agent import ItineraryAgent
 
 
+# Initialize agents
 transport_agent = TransportAgent()
 accommodation_agent = AccommodationAgent()
 itinerary_agent = ItineraryAgent()
 preference_agent = PreferenceAgent()
+budget_agent = BudgetAgent()
+
 
 
 def planner_agent(destination, budget, preferences):
@@ -34,6 +38,12 @@ def planner_agent(destination, budget, preferences):
     )
 
 
+    # Analyze budget
+    budget_info = budget_agent.process_request(
+        planner_message
+    )
+
+
     # Get transport recommendations
     transport_info = transport_agent.process_request(
         planner_message
@@ -53,11 +63,14 @@ def planner_agent(destination, budget, preferences):
 
 
     return {
+
         "sender": "Planner Agent",
 
         "destination": destination,
 
         "preference_information": preference_info,
+
+        "budget_information": budget_info,
 
         "travel_information": travel_info,
 
@@ -73,16 +86,22 @@ def planner_agent(destination, budget, preferences):
 if __name__ == "__main__":
 
     result = planner_agent(
+
         "Kitulgala",
+
         5000,
+
         {
             "budget_type": "Low",
+
             "travel_style": "Adventure",
+
             "interests": [
                 "Adventure",
                 "Nature"
             ]
         }
     )
+
 
     print(result)
