@@ -5,6 +5,7 @@ from agents.transport_agent import TransportAgent
 from agents.accommodation_agent import AccommodationAgent
 from agents.itinerary_agent import ItineraryAgent
 from agents.weather_agent import WeatherAgent
+from agents.recommendation_agent import RecommendationAgent
 
 
 
@@ -21,6 +22,8 @@ preference_agent = PreferenceAgent()
 budget_agent = BudgetAgent()
 
 weather_agent = WeatherAgent()
+
+recommendation_agent = RecommendationAgent()
 
 
 
@@ -91,11 +94,38 @@ def planner_agent(destination, budget, preferences):
 
 
 
+    # Prepare data for Recommendation Agent
+
+    recommendation_input = {
+
+        "destination": destination,
+
+        "preference_information": preference_info,
+
+        "budget_information": budget_info,
+
+        "weather_information": weather_info,
+
+        "transport_information": transport_info,
+
+        "accommodation_information": accommodation_info
+
+    }
+
+
+
+    # Generate final recommendation
+
+    recommendation_info = recommendation_agent.process_request(
+        recommendation_input
+    )
+
+
+
     return {
 
 
         "sender": "Planner Agent",
-
 
         "destination": destination,
 
@@ -118,7 +148,10 @@ def planner_agent(destination, budget, preferences):
         "accommodation_information": accommodation_info,
 
 
-        "itinerary_information": itinerary_info
+        "itinerary_information": itinerary_info,
+
+
+        "recommendation_information": recommendation_info
 
     }
 
@@ -130,12 +163,9 @@ if __name__ == "__main__":
 
     result = planner_agent(
 
-
         "Kitulgala",
 
-
         5000,
-
 
         {
 
