@@ -16,29 +16,41 @@ client = chromadb.PersistentClient(
 )
 
 
+# Create or connect to collection
 collection = client.get_or_create_collection(
     name="sri_lanka_travel"
 )
 
 
-# Load travel documents
+# Load all Sri Lanka travel documents
 documents = load_documents(
-    "data/travel_documents"
+    "data"
 )
 
 
 texts = []
 ids = []
+metadatas = []
 
 
+# Prepare documents for vector database
 for index, doc in enumerate(documents):
 
     texts.append(
         doc["content"]
     )
 
+    # Use unique path as ID
     ids.append(
-        doc["filename"]
+        doc["path"]
+    )
+
+    # Add metadata for better retrieval
+    metadatas.append(
+        {
+            "filename": doc["filename"],
+            "source": doc["path"]
+        }
     )
 
 
@@ -48,11 +60,12 @@ embeddings = model.encode(
 ).tolist()
 
 
-# Store documents
+# Store documents in ChromaDB
 collection.add(
     documents=texts,
     embeddings=embeddings,
-    ids=ids
+    ids=ids,
+    metadatas=metadatas
 )
 
 

@@ -4,27 +4,29 @@ import os
 def load_documents(folder_path):
     documents = []
 
-    for filename in os.listdir(folder_path):
-        if filename.endswith(".txt"):
+    for root, dirs, files in os.walk(folder_path):
 
-            file_path = os.path.join(folder_path, filename)
+        for filename in files:
 
-            with open(file_path, "r", encoding="utf-8") as file:
-                content = file.read()
+            if filename.endswith(".txt"):
 
-            documents.append({
-                "filename": filename,
-                "content": content
-            })
+                file_path = os.path.join(root, filename)
+
+                with open(file_path, "r", encoding="utf-8") as file:
+                    content = file.read()
+
+                documents.append({
+                    "filename": filename,
+                    "path": file_path,
+                    "content": content
+                })
 
     return documents
 
 
 if __name__ == "__main__":
 
-    docs = load_documents(
-        "data/travel_documents"
-    )
+    docs = load_documents("data")
 
     print("Total documents loaded:", len(docs))
 

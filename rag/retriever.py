@@ -8,7 +8,7 @@ model = SentenceTransformer(
 )
 
 
-# Connect to existing Chroma database
+# Connect ChromaDB
 client = chromadb.PersistentClient(
     path="./chroma_db"
 )
@@ -19,17 +19,16 @@ collection = client.get_collection(
 )
 
 
-def search_travel(destination, results=1):
 
-    query = f"Travel information about {destination}"
+def search_travel(query, results=3):
 
-    # Convert query into embedding
+    # Convert user query into embedding
     query_embedding = model.encode(
         query
     ).tolist()
 
 
-    # Search similar documents
+    # Search vector database
     response = collection.query(
         query_embeddings=[
             query_embedding
@@ -41,17 +40,25 @@ def search_travel(destination, results=1):
     return response["documents"][0]
 
 
+
 if __name__ == "__main__":
 
-    query = "adventure activities in Sri Lanka"
+
+    user_query = """
+    I want adventure places in Sri Lanka 
+    with budget accommodation
+    """
 
 
-    results = search_travel(query)
+    documents = search_travel(
+        user_query
+    )
 
 
     print("\nRelevant Documents:\n")
 
 
-    for result in results:
-        print("----------------")
-        print(result[:300])
+    for doc in documents:
+
+        print("--------------------")
+        print(doc[:500])
