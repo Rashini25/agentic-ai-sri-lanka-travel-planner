@@ -433,17 +433,6 @@ https://github.com/Rashini25/agentic-ai-sri-lanka-travel-planner
 
 ---
 
-# Screenshots
-
-Recommended screenshots:
-
-- Home Page
-- AI Chat Interface
-- Generated Travel Plan
-- Multi-Agent Architecture Diagram
-
----
-
 # Known Limitations
 
 - Depends on internet connectivity.
