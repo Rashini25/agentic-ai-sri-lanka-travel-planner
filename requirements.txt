@@ -3,5 +3,5 @@ chromadb
 sentence-transformers
 python-dotenv
 requests
-torch==2.5.1
-transformers==4.46.3
+transformers
+torch
