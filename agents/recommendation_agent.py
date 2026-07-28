@@ -4,9 +4,10 @@ from agents.llm_service import openrouter_chat
 
 class RecommendationAgent:
     """
-    Recommendation Agent generates the final travel recommendation
-    using OpenRouter LLM reasoning based on outputs from other agents.
+    Recommendation Agent creates the final travel plan
+    by combining outputs from all specialized agents.
     """
+
 
 
     def __init__(self):
@@ -18,68 +19,149 @@ class RecommendationAgent:
     def process_request(self, planner_data):
 
 
-        destination = planner_data["destination"]
+        destination = planner_data.get(
+            "destination",
+            "Sri Lanka"
+        )
 
-
-
-        # Prepare prompt for OpenRouter reasoning model
 
         prompt = f"""
 
-You are an expert Sri Lankan travel recommendation assistant.
+You are a professional Sri Lankan travel planning assistant.
 
-Create the best travel plan based on the information provided by different AI agents.
+Create a personalized travel plan for the user.
 
-Destination:
+Follow these strict rules:
+
+- Only use the provided information.
+- Focus ONLY on the requested destination.
+- Do not mention other cities or destinations.
+- Do not create fake hotels.
+- Do not create fake prices.
+- Do not add unrelated attractions.
+- Do not start with greetings.
+- Do not mention AI agents.
+- Do not add closing messages.
+- Do not say "Happy travels".
+- Keep the answer concise and professional.
+
+
+
+Requested Destination:
+
 {destination}
 
 
-User Preference Information:
+
+Retrieved Destination Knowledge (RAG):
+
+{planner_data.get("travel_information")}
+
+
+
+User Preferences:
+
 {planner_data.get("preference_information")}
 
 
+
 Budget Information:
+
 {planner_data.get("budget_information")}
 
 
-Weather Information:
-{planner_data.get("weather_information")}
 
+Transportation Options:
 
-Transportation Information:
 {planner_data.get("transport_information")}
 
 
-Accommodation Information:
+
+Accommodation Options:
+
 {planner_data.get("accommodation_information")}
 
 
+
+Weather Information:
+
+{planner_data.get("weather_information")}
+
+
+
 Itinerary Information:
+
 {planner_data.get("itinerary_information")}
 
 
 
-Generate a clear travel recommendation.
-
-Your response should include:
-
-1. Recommended transportation method
-2. Recommended accommodation
-3. Recommended activities
-4. Budget suitability
-5. Weather consideration
-6. Reasons for your recommendation
+Generate the response exactly using this format:
 
 
-Write the answer in a friendly way suitable for a traveller.
+
+# {destination} Travel Plan
+
+
+## Transportation
+
+Recommended option:
+
+Estimated cost:
+
+Why it suits the traveller:
+
+
+## Accommodation
+
+Recommended place:
+
+Price:
+
+Location:
+
+
+## Suggested Itinerary
+
+
+Day 1:
+- 
+
+
+Day 2:
+- 
+
+
+
+## Food & Cultural Experiences
+
+- 
+
+
+
+## Estimated Budget
+
+Transportation:
+
+Accommodation:
+
+Activities:
+
+Approximate total:
+
+
+## Travel Tips
+
+- 
+
+
+
+Do not add anything before or after this format.
 
 """
 
 
 
-        # Use OpenRouter for reasoning
-
-        ai_response = openrouter_chat(prompt)
+        response = openrouter_chat(prompt)
 
 
 
@@ -95,7 +177,8 @@ Write the answer in a friendly way suitable for a traveller.
             "destination": destination,
 
 
-            "final_recommendation": ai_response
+            "final_recommendation": response.strip()
+
 
         }
 
@@ -106,138 +189,39 @@ Write the answer in a friendly way suitable for a traveller.
 if __name__ == "__main__":
 
 
-    recommendation_agent = RecommendationAgent()
+    agent = RecommendationAgent()
 
 
+    result = agent.process_request(
 
-    sample_data = {
+        {
 
+            "destination":"Ratnapura",
 
-        "destination": "Kitulgala",
+            "preference_information":{
 
+                "travel_style":"Cultural",
 
-        "preference_information": {
+                "interests":[
 
-            "budget_type": "Low",
+                    "Food",
 
-            "travel_style": "Adventure",
+                    "Culture"
 
-            "interests": [
+                ]
 
-                "Nature",
-
-                "Adventure"
-
-            ]
-
-        },
+            },
 
 
-        "budget_information": {
+            "budget_information":{
 
-            "available_budget": 5000,
-
-            "estimated_cost": 5000
-
-        },
-
-
-        "weather_information": {
-
-            "weather_information": {
-
-                "condition": "Warm and humid",
-
-                "temperature": "25°C - 30°C"
+                "available_budget":8000
 
             }
 
-        },
-
-
-        "transport_information": {
-
-
-            "transport_options": [
-
-                {
-
-                    "method": "Public Bus",
-
-                    "estimated_cost": "Rs.500-800"
-
-                },
-
-                {
-
-                    "method": "Taxi",
-
-                    "estimated_cost": "Rs.4000-5000"
-
-                }
-
-            ]
-
-        },
-
-
-        "accommodation_information": {
-
-
-            "accommodation_options": [
-
-                {
-
-                    "name": "Budget Guest House",
-
-                    "price_per_night": 2500
-
-                },
-
-                {
-
-                    "name": "Affordable Homestay",
-
-                    "price_per_night": 2000
-
-                }
-
-            ]
-
-        },
-
-
-        "itinerary_information": {
-
-
-            "itinerary": [
-
-                {
-
-                    "day": 1,
-
-                    "activities": [
-
-                        "Visit Kelani River",
-
-                        "Explore rainforest"
-
-                    ]
-
-                }
-
-            ]
-
         }
 
-    }
-
-
-
-    result = recommendation_agent.process_request(
-        sample_data
     )
-
 
 
     print(result)

@@ -8,9 +8,14 @@ from agents.weather_agent import WeatherAgent
 from agents.recommendation_agent import RecommendationAgent
 from agents.router_agent import RouterAgent
 
+import re
 
 
-# Initialize agents
+
+# -----------------------------
+# Initialize Agents
+# -----------------------------
+
 
 transport_agent = TransportAgent()
 
@@ -30,31 +35,103 @@ router_agent = RouterAgent()
 
 
 
+# -----------------------------
+# Destination Extraction
+# -----------------------------
+
+
+def extract_destination(message):
+
+
+    locations = [
+
+        "Kandy",
+        "Ella",
+        "Mirissa",
+        "Galle",
+        "Colombo",
+        "Ratnapura",
+        "Kitulgala",
+        "Nuwara Eliya",
+        "Sigiriya",
+        "Anuradhapura",
+        "Polonnaruwa",
+        "Jaffna",
+        "Trincomalee",
+        "Bentota",
+        "Arugam Bay"
+
+    ]
+
+
+    for place in locations:
+
+        if place.lower() in message.lower():
+
+            return place
+
+
+
+    return "Sri Lanka"
+
+
+
+
+# -----------------------------
+# Main Planner Agent
+# -----------------------------
+
+
 def planner_agent(destination, budget, preferences, user_message):
 
 
-    # Route user request using Router Agent
+
+    # Extract destination if UI sends empty value
+
+    if not destination:
+
+        destination = extract_destination(
+            user_message
+        )
+
+
+
+    # Router
+
     routing_information = router_agent.process_request(
+
         user_message
+
     )
 
 
 
-    # Get travel information from RAG Agent
-    travel_info = rag_agent(destination)
+    # RAG Retrieval
+
+    travel_info = rag_agent(
+
+        destination
+
+    )
 
 
 
-    # Structured message for other agents
+    # Shared message
+
     planner_message = {
 
-        "sender": "Planner Agent",
 
-        "travel_details": {
+        "sender":"Planner Agent",
 
-            "destination": destination,
 
-            "budget": budget
+        "travel_details":{
+
+
+            "destination":destination,
+
+
+            "budget":budget
+
 
         }
 
@@ -62,113 +139,152 @@ def planner_agent(destination, budget, preferences, user_message):
 
 
 
-    # Analyze user preferences
+
+    # Preference
+
     preference_info = preference_agent.process_request(
+
         preferences
+
     )
 
 
 
-    # Analyze budget
+    # Budget
+
     budget_info = budget_agent.process_request(
+
         planner_message
+
     )
 
 
 
-    # Get weather information
+    # Weather
+
     weather_info = weather_agent.process_request(
+
         planner_message
+
     )
 
 
 
-    # Get transport recommendations
+    # Transport
+
     transport_info = transport_agent.process_request(
+
         planner_message
+
     )
 
 
 
-    # Get accommodation recommendations
+    # Accommodation
+
     accommodation_info = accommodation_agent.process_request(
+
         planner_message
+
     )
 
 
 
-    # Get itinerary recommendations
+    # Itinerary
+
     itinerary_info = itinerary_agent.process_request(
+
         planner_message
+
     )
 
 
 
-    # Prepare information for Recommendation Agent
+
+    # Data for Recommendation Agent
+
 
     recommendation_input = {
 
-        "sender": "Planner Agent",
 
-        "destination": destination,
+        "sender":"Planner Agent",
 
-        "preference_information": preference_info,
 
-        "budget_information": budget_info,
+        "destination":destination,
 
-        "weather_information": weather_info,
 
-        "transport_information": transport_info,
+        "travel_information":travel_info,
 
-        "accommodation_information": accommodation_info,
 
-        "itinerary_information": itinerary_info
+        "preference_information":preference_info,
+
+
+        "budget_information":budget_info,
+
+
+        "weather_information":weather_info,
+
+
+        "transport_information":transport_info,
+
+
+        "accommodation_information":accommodation_info,
+
+
+        "itinerary_information":itinerary_info
+
 
     }
 
 
 
-    # Generate final recommendation
+
+    # Final answer
 
     recommendation_info = recommendation_agent.process_request(
+
         recommendation_input
+
     )
+
 
 
 
     return {
 
 
-        "sender": "Planner Agent",
-
-        "destination": destination,
+        "sender":"Planner Agent",
 
 
-        "routing_information": routing_information,
+        "destination":destination,
 
 
-        "preference_information": preference_info,
+        "routing_information":routing_information,
 
 
-        "budget_information": budget_info,
+        "preference_information":preference_info,
 
 
-        "weather_information": weather_info,
+        "budget_information":budget_info,
 
 
-        "travel_information": travel_info,
+        "weather_information":weather_info,
 
 
-        "transport_information": transport_info,
+        "travel_information":travel_info,
 
 
-        "accommodation_information": accommodation_info,
+        "transport_information":transport_info,
 
 
-        "itinerary_information": itinerary_info,
+        "accommodation_information":accommodation_info,
 
 
-        "recommendation_information": recommendation_info
+        "itinerary_information":itinerary_info,
+
+
+        "recommendation_information":recommendation_info
+
 
     }
 
@@ -176,27 +292,37 @@ def planner_agent(destination, budget, preferences, user_message):
 
 
 
-if __name__ == "__main__":
+# -----------------------------
+# Testing
+# -----------------------------
+
+
+if __name__=="__main__":
 
 
     result = planner_agent(
 
-        "Kitulgala",
 
-        5000,
+        "",
+
+
+        8000,
 
 
         {
 
-            "budget_type": "Low",
 
-            "travel_style": "Adventure",
+            "budget_type":"Medium",
 
-            "interests": [
 
-                "Adventure",
+            "travel_style":"Cultural",
 
-                "Nature"
+
+            "interests":[
+
+                "Food",
+
+                "Culture"
 
             ]
 
@@ -204,12 +330,23 @@ if __name__ == "__main__":
 
 
         """
-        I want to travel to Kitulgala this weekend.
-        I need a low budget adventure trip.
-        Suggest transportation, accommodation and activities.
+
+        I want to visit Ratnapura next week.
+
+        My budget is Rs.8000.
+
+        I love cultural places and local food.
+
+        Suggest transport, hotels and activities.
+
         """
 
     )
 
 
-    print(result)
+
+    print(
+
+        result["recommendation_information"]["final_recommendation"]
+
+    )
