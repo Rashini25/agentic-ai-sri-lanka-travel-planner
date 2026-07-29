@@ -6,3 +6,4 @@ requests
 transformers
 torch
 groq
+openai
