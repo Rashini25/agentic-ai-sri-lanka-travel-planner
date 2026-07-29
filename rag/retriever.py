@@ -14,9 +14,12 @@ client = chromadb.PersistentClient(
 )
 
 
-collection = client.get_collection(
+collection = client.get_or_create_collection(
     name="sri_lanka_travel"
 )
+
+if collection.count() == 0:
+    from rag.vector_store import *
 
 
 
