@@ -421,7 +421,7 @@ The application is deployed using **Streamlit Community Cloud**.
 
 **Live Application**
 
-> *(Add your Streamlit Cloud URL here after deployment.)*
+https://agentic-ai-sri-lanka-travel-planner-olf2bv5blhmv3mxf6yt4jy.streamlit.app/
 
 ---
 
