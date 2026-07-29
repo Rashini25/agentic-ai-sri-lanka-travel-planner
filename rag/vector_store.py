@@ -1,7 +1,10 @@
 import chromadb
 from sentence_transformers import SentenceTransformer
 
-from document_loader import load_documents
+try:
+    from rag.document_loader import load_documents
+except ModuleNotFoundError:
+    from document_loader import load_documents
 
 
 # Load embedding model
